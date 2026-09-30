@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="1024" height="1024">
+    <!-- Vista: an apricot garden arch, and through it the view: a low sun over green hills, and a cypress. -->
+    <defs>
+        <linearGradient id="arch" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffd48a"/><stop offset=".6" stop-color="#f9b25c"/><stop offset="1" stop-color="#ec8d3c"/></linearGradient>
+        <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffe9c9"/><stop offset="1" stop-color="#ffc08a"/></linearGradient>
+        <linearGradient id="far" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#bfe3a4"/><stop offset="1" stop-color="#8ccb7e"/></linearGradient>
+        <linearGradient id="near" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7ccd78"/><stop offset="1" stop-color="#3d9a4f"/></linearGradient>
+        <linearGradient id="cypress" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#5fb06a"/><stop offset="1" stop-color="#2a7a42"/></linearGradient>
+        <radialGradient id="sun"><stop offset="0" stop-color="#fffbe9"/><stop offset=".45" stop-color="#fff3c4"/><stop offset="1" stop-color="#fff3c4" stop-opacity="0"/></radialGradient>
+        <clipPath id="opening"><path d="M36 112V62a28 28 0 0 1 56 0v50z"/></clipPath>
+    </defs>
+    <g transform="translate(0 -5)">
+        <path d="M20 116V62a44 44 0 0 1 88 0v54a4 4 0 0 1-4 4H24a4 4 0 0 1-4-4z" fill="url(#arch)"/>
+        <path d="M26 60a38 38 0 0 1 60-31" fill="none" stroke="#fff" stroke-opacity=".5" stroke-width="3" stroke-linecap="round"/>
+        <g clip-path="url(#opening)">
+            <rect x="30" y="30" width="68" height="90" fill="url(#sky)"/>
+            <circle cx="72" cy="76" r="20" fill="url(#sun)"/>
+            <path d="M30 88c14-9 26-10 38-5s22 4 30-1v40H30z" fill="url(#far)"/>
+            <path d="M30 100c18-8 34-6 46-1s16 3 22 0v22H30z" fill="url(#near)"/>
+            <path d="M50 101c-5-9-4-26 0-38 4 12 5 29 0 38z" fill="url(#cypress)"/>
+        </g>
+    </g>
+</svg>
