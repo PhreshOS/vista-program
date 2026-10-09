@@ -24,7 +24,7 @@ export default async function start() {
     let view: DesktopSize = await desktop.viewport.size()
     let offset: DesktopOffset = await desktop.viewport.offset()
     let plane: DesktopSize = await desktop.plane.size()
-    let animations = (await desktop.preferences.snapshot()).animations
+    let animations = (await desktop.preferences.resolve()).animations
 
     /** The scene takes the same motion the Desktop gives the view, so it and the windows arrive together. */
     function look(transaction: Transaction | null) {
@@ -43,14 +43,14 @@ export default async function start() {
     desktop.viewport.subscribe("resize", size => { view = size; look(null) })
     desktop.viewport.subscribe("move", move => { offset = move.offset; look(move.transaction) })
     desktop.plane.subscribe("resize", size => { plane = size; look(null) })
-    desktop.preferences.subscribe("change", preferences => {
+    desktop.preferences.subscribe("changeResolved", preferences => {
         world.nightfall(preferences.theme === "dark")
         animations = preferences.animations
         if (animations) play()
         else still()
     })
 
-    const preferences = await desktop.preferences.snapshot()
+    const preferences = await desktop.preferences.resolve()
     world.nightfall(preferences.theme === "dark")
     // It opens where the view already is, with no walk to get there.
     look(null)

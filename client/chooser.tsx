@@ -1,4 +1,4 @@
-import { ContextProvider, DesktopProvider, SystemProvider, useDesktopPreferences, useProgram, useProgramStore, useSystemAppearance } from "@phreshos/react"
+import { ContextProvider, DesktopProvider, SystemProvider, useResolvedDesktopPreferences, useProgram, useProgramStore, useSystemAppearance } from "@phreshos/react"
 import { context, desktop, system } from "@phreshos/client"
 import { Button, DocumentTheme, Flex, GridList, Heading, Loading, ScrollArea, Text, UIProvider, useAppearance, useRequirement, useScale } from "@phreshos/react-ui"
 import { StrictMode, useEffect, useState } from "react"
@@ -29,7 +29,7 @@ export default function start() {
 }
 
 function Themed() {
-    return <UIProvider appearance={useSystemAppearance()} preferences={useDesktopPreferences()}>
+    return <UIProvider appearance={useSystemAppearance()} preferences={useResolvedDesktopPreferences()}>
         <DocumentTheme />
         <Loading><Chooser /></Loading>
     </UIProvider>
