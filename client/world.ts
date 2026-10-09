@@ -3,7 +3,6 @@ import type { Place, Scene } from "./scene"
 import { EffectComposer } from "three/addons/postprocessing/EffectComposer.js"
 import { RenderPass } from "three/addons/postprocessing/RenderPass.js"
 import { ShaderPass } from "three/addons/postprocessing/ShaderPass.js"
-import { OutputPass } from "three/addons/postprocessing/OutputPass.js"
 import { progressAt, type Transaction } from "@phreshos/core"
 
 /** Where the camera looks, from -1 to 1 across the plane in each direction. */
@@ -116,12 +115,13 @@ export default class World implements Scene {
         this.scene.add(sky(this.shared), ground(this.shared), hills(this.shared, landscape.hills), grass(this.shared, landscape.lawn), ...landscape.plant(this.shared))
         this.scene.add(air(this.shared))
 
-        // Four samples a pixel: thin blades far away would otherwise flicker and draw moiré rings.
-        this.composer = new EffectComposer(this.renderer, new THREE.WebGLRenderTarget(1, 1, { samples: 4, type: THREE.HalfFloatType }))
+        // Two samples a pixel: thin blades far away would otherwise flicker and draw moiré rings. Four
+        // looked the same and cost the GPU more than the whole lawn.
+        this.composer = new EffectComposer(this.renderer, new THREE.WebGLRenderTarget(1, 1, { samples: 2, type: THREE.HalfFloatType }))
         this.composer.addPass(new RenderPass(this.scene, this.camera))
+        // The beams are the last pass, and turn the light into the screen's colours as they draw.
         this.rays = new ShaderPass(raysShader())
         this.composer.addPass(this.rays)
-        this.composer.addPass(new OutputPass())
 
         this.paint(landscape.palettes.morning)
     }
@@ -743,7 +743,10 @@ function air(shared: Shared) {
     return points
 }
 
-/** Beams: light gathered along the way to the sun, where the sky shows through. */
+/**
+ * Beams: light gathered along the way to the sun, where the sky shows through. As the last pass it
+ * also maps the light to the screen's range and colours, so the picture is read and written once.
+ */
 function raysShader() {
     return {
         uniforms: { tDiffuse: { value: null }, sun: { value: new THREE.Vector2(0.4, 0.6) }, strength: { value: 1 } },
@@ -752,18 +755,24 @@ function raysShader() {
             uniform sampler2D tDiffuse; uniform vec2 sun; uniform float strength; varying vec2 vUv;
             void main() {
                 vec4 base = texture2D(tDiffuse, vUv);
-                vec2 step = (vUv - sun) / 48.0;
-                vec2 at = vUv;
-                float weight = 1.0, gathered = 0.0;
-                for (int i = 0; i < 48; i++) {
-                    at -= step;
-                    vec3 c = texture2D(tDiffuse, at).rgb;
-                    float bright = smoothstep(0.85, 1.4, dot(c, vec3(0.33)));
-                    gathered += bright * weight;
-                    weight *= 0.965;
+                float gathered = 0.0;
+                // With no beams, by night or with the sun out of view, nothing is gathered.
+                if (strength > 0.0) {
+                    vec2 step = (vUv - sun) / 48.0;
+                    vec2 at = vUv;
+                    float weight = 1.0;
+                    for (int i = 0; i < 48; i++) {
+                        at -= step;
+                        vec3 c = texture2D(tDiffuse, at).rgb;
+                        float bright = smoothstep(0.85, 1.4, dot(c, vec3(0.33)));
+                        gathered += bright * weight;
+                        weight *= 0.965;
+                    }
                 }
                 vec3 beams = vec3(1.0, 0.8, 0.55) * gathered / 48.0 * 1.6 * strength;
                 gl_FragColor = vec4(base.rgb + beams, base.a);
+                #include <tonemapping_fragment>
+                #include <colorspace_fragment>
             }`
     }
 }

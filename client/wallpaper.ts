@@ -7,6 +7,10 @@ import type { Place } from "./scene"
 // A quiet pace for a background: a scene needs no more than thirty frames a second at rest.
 const frame = 1000 / 30
 
+// While the camera walks, sixty frames a second: on a faster screen every frame more would only take
+// the GPU from the windows moving above it. A frame that comes a little early still counts.
+const walkingFrame = 1000 / 60 - 3
+
 /** Draws the chosen scene behind the windows, and follows the view across the plane. */
 export default async function start() {
 
@@ -72,8 +76,8 @@ export default async function start() {
             if (!animations) still()
             return
         }
-        // While the camera walks it draws every frame, so it moves as smoothly as the windows.
-        if (time - previous >= frame || world.walking()) {
+        // While the camera walks it draws at its walking pace, so it moves as smoothly as the windows.
+        if (time - previous >= frame || (world.walking() && time - previous >= walkingFrame)) {
             previous = time
             world.draw(time)
         }
