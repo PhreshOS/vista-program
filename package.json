@@ -2,7 +2,7 @@
   "name": "vista-program",
   "displayName": "Vista",
   "private": true,
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Living scenes behind the windows, built by hand in 3D.",
   "type": "module",
   "packageManager": "bun@1.3.14",
@@ -33,7 +33,7 @@
     "@phreshos/client": "^0.2.0",
     "@phreshos/core": "^0.2.0",
     "@phreshos/react": "^0.2.0",
-    "@phreshos/react-ui": "^0.2.0",
+    "@phreshos/react-ui": "^0.2.1",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
     "three": "^0.186.1"
